@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Fila de Atendimento</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <main class="container">
+
+        <h1>Fila de Atendimento</h1>
+
+        <section class="cadastro">
+
+            <h2>Cadastrar cliente</h2>
+
+            <form action="/cadastrar" method="POST">
+
+                <input
+                    type="text"
+                    name="nome"
+                    placeholder="Nome do cliente"
+                    required
+                >
+
+                <button type="submit">
+                    Entrar na fila
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <section class="controle">
+
+            <h2>Atendimento</h2>
+
+            <form action="/chamar-proximo" method="POST">
+
+                <button type="submit">
+                    Chamar próximo
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <section class="fila">
+
+            <h2>Fila de espera</h2>
+
+            {% if clientes %}
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Posição</th>
+                            <th>Nome</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for cliente in clientes %}
+
+                            <tr>
+
+                                <td>
+                                    {{ loop.index }}
+                                </td>
+
+                                <td>
+                                    {{ cliente["nome"] }}
+                                </td>
+
+                                <td>
+                                    <span class="status">
+                                        {{ cliente["status"] }}
+                                    </span>
+                                </td>
+
+                                <td>
+
+                                    {% if cliente["status"] == "Em atendimento" %}
+
+                                        <form
+                                            action="/concluir/{{ cliente['id'] }}"
+                                            method="POST"
+                                        >
+                                            <button type="submit">
+                                                Concluir
+                                            </button>
+                                        </form>
+
+                                    {% endif %}
+
+
+                                    {% if cliente["status"] == "Aguardando" or cliente["status"] == "Em atendimento" %}
+
+                                        <form
+                                            action="/cancelar/{{ cliente['id'] }}"
+                                            method="POST"
+                                        >
+                                            <button type="submit">
+                                                Cancelar
+                                            </button>
+                                        </form>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <p>A fila está vazia.</p>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
